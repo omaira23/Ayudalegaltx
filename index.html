@@ -842,9 +842,9 @@ async function signPOA(){
   const signerName=document.getElementById('sig-name').value.trim();
   const signDate=document.getElementById('sig-date').value;
 
-  generatePOAPDF(signerName,signDate,sigDataUrl);
+  const pdfResult=generatePOAPDF(signerName,signDate,sigDataUrl);
 
-  // Notify the firm that the client signed — reuses the lead email pipeline
+  // Notify the firm with a text alert (fast, always works)
   if(window.emailjs){
     try{
       await emailjs.send(EJS_SERVICE,EJS_TEMPLATE,{
@@ -859,11 +859,29 @@ async function signPOA(){
         insurance:'—',
         medical:'—',
         priority:'AUTORIZACIÓN Y FIRMA COMPLETADAS — Haque Law, PLLC',
-        notes:'Cliente firmó digitalmente el Power of Attorney + autorizaciones médica/laboral el '+signDate+'. PDF firmado descargado en su dispositivo — solicitar copia si es necesario para el expediente.',
+        notes:'Cliente firmó digitalmente. El PDF firmado llega en un correo aparte (con el documento adjunto) en los próximos segundos.',
         timestamp:signDate
       });
     }catch(e){console.log('EmailJS error (POA):',e);}
   }
+
+  // Send the actual signed PDF as a real email attachment via serverless function
+  try{
+    await fetch('/.netlify/functions/send-poa',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        pdfBase64:pdfResult.base64,
+        filename:pdfResult.filename,
+        signerName:signerName,
+        signerPhone:caseData.phone||'',
+        signerEmail:caseData.email||'',
+        signerCity:caseData.city||'',
+        accidentDate:caseData.date||'',
+        signDate:signDate
+      })
+    });
+  }catch(e){console.log('PDF email delivery error:',e);}
 
   document.getElementById('step6').innerHTML=`
     <div class="poa-signed-card">
@@ -1045,7 +1063,12 @@ function generatePOAPDF(signerName,signDate,sigDataUrl){
 
   const safeName=signerName.replace(/\s+/g,'-');
   const safeDate=signDate.split('/').join('-');
-  doc.save(`POA-signed-${safeName}-${safeDate}.pdf`);
+  const filename=`POA-signed-${safeName}-${safeDate}.pdf`;
+  doc.save(filename);
+
+  const dataUri=doc.output('datauristring');
+  const base64=dataUri.split(',')[1];
+  return {base64,filename};
 }
 
 function addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES){
