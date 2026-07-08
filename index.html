@@ -876,78 +876,172 @@ async function signPOA(){
 
 function generatePOAPDF(signerName,signDate,sigDataUrl){
   const{jsPDF}=window.jspdf;const doc=new jsPDF();
-  const isES=lang==='es';
 
-  const header=(title)=>{
+  const letterhead=()=>{
     doc.setFillColor(255,255,255);doc.rect(0,0,210,297,'F');
-    doc.setFillColor(11,22,40);doc.rect(0,0,210,20,'F');
-    doc.setTextColor(201,168,76);doc.setFontSize(13);doc.setFont('helvetica','bold');
-    doc.text('HAQUE LAW, PLLC',14,12);
-    doc.setTextColor(255,255,255);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
-    doc.text('Mahmood Haque, Esq. · 1111 North Loop West, Suite 500, Houston, TX 77008 · (281) 417-8311',14,17);
-    doc.setTextColor(20,30,55);doc.setFontSize(13);doc.setFont('helvetica','bold');
-    doc.text(title,105,32,{align:'center'});
+    doc.setTextColor(11,22,40);doc.setFontSize(16);doc.setFont('helvetica','bold');
+    doc.text('HAQUE LAW',14,16);
+    doc.setTextColor(201,168,76);doc.setFontSize(8);doc.setFont('helvetica','normal');
+    doc.text('Personal Injury Lawyer',14,21);
+    doc.setTextColor(20,30,55);doc.setFontSize(8.5);doc.setFont('helvetica','bold');
+    doc.text('MAHMOOD HAQUE, ESQ.',196,10,{align:'right'});
+    doc.setFont('helvetica','italic');doc.setFontSize(7.5);
+    doc.text('Attorney & Counselor at Law',196,14,{align:'right'});
+    doc.setFont('helvetica','normal');
+    doc.text('1111 North Loop West, Suite 500',196,18,{align:'right'});
+    doc.text('Houston, TX 77008',196,22,{align:'right'});
+    doc.setFont('helvetica','bold');
+    doc.text('T. (281) 417 8311',196,26,{align:'right'});
+    doc.setFont('helvetica','normal');
+    doc.text('F. (281) 417 8356',196,30,{align:'right'});
+    doc.text('MHAQUE@HAQUELAWPLLC.COM',196,34,{align:'right'});
+    doc.setDrawColor(220,220,220);doc.line(14,38,196,38);
   };
 
-  // PAGE 1 — POA & FEE AGREEMENT
-  header(isES?'PODER Y CONTRATO DE REPRESENTACIÓN':'POWER OF ATTORNEY & FEE AGREEMENT');
-  let y=44;
-  doc.setTextColor(60,70,90);doc.setFontSize(9);doc.setFont('helvetica','normal');
-  const introLines=doc.splitTextToSize(isES
-    ?`Este acuerdo se hace el ${signDate}, entre Haque Law, PLLC ("Abogado") y ${signerName} ("Cliente"). El Cliente contrata al Abogado para manejar todo reclamo relacionado con el accidente ocurrido el ${caseData.date||'—'} en ${caseData.city||'—'}, Texas, incluyendo negociación de acuerdo y demanda si fuera necesario.`
-    :`This agreement is made on ${signDate}, between Haque Law, PLLC ("Attorney") and ${signerName} ("Client"). Client retains Attorney to handle all claims related to the accident on ${caseData.date||'—'} in ${caseData.city||'—'}, Texas, including settlement negotiation and litigation if necessary.`,180);
-  doc.text(introLines,14,y);y+=introLines.length*5+8;
+  const para=(text,y,size=9)=>{
+    doc.setTextColor(20,30,55);doc.setFontSize(size);doc.setFont('helvetica','normal');
+    const l=doc.splitTextToSize(text,182);
+    doc.text(l,14,y);
+    return y+l.length*4.6;
+  };
+  const roman=(num,title,y)=>{
+    doc.setTextColor(20,30,55);doc.setFontSize(9.5);doc.setFont('helvetica','bold');
+    doc.text(num+'.',14,y);doc.text(title,22,y);
+    return y+6;
+  };
 
-  doc.setTextColor(201,168,76);doc.setFontSize(10);doc.setFont('helvetica','bold');
-  doc.text(isES?'HONORARIOS DE CONTINGENCIA':'CONTINGENCY FEE',14,y);doc.line(14,y+2,196,y+2);y+=9;
-  doc.setFillColor(201,168,76,0.1);doc.roundedRect(14,y,182,9,2,2,'F');
-  doc.setTextColor(20,30,55);doc.setFontSize(8.5);doc.setFont('helvetica','normal');
-  doc.text(isES?'Antes de presentar demanda:':'Before lawsuit is filed:',18,y+6);
-  doc.setFont('helvetica','bold');doc.text('33 1/3%',150,y+6);y+=13;
-  doc.setFillColor(201,168,76,0.1);doc.roundedRect(14,y,182,9,2,2,'F');
-  doc.setFont('helvetica','normal');doc.text(isES?'Después de presentar demanda:':'After lawsuit is filed:',18,y+6);
-  doc.setFont('helvetica','bold');doc.text('40%',150,y+6);y+=15;
-  doc.setTextColor(42,138,90);doc.setFontSize(9);doc.setFont('helvetica','bold');
-  doc.text(isES?'Si no hay recuperación, el Cliente no debe honorarios.':'If nothing is recovered, Client owes no fee.',14,y);y+=10;
+  /* ══════════ PAGE 1 — POWER OF ATTORNEY ══════════ */
+  letterhead();
+  let y=48;
+  doc.setTextColor(20,30,55);doc.setFontSize(13);doc.setFont('helvetica','bold');
+  doc.text('POWER OF ATTORNEY',105,y,{align:'center'});y+=10;
 
-  doc.setTextColor(201,168,76);doc.setFontSize(10);doc.setFont('helvetica','bold');
-  doc.text(isES?'APROBACIÓN DEL CLIENTE':'CLIENT APPROVAL',14,y);doc.line(14,y+2,196,y+2);y+=8;
-  doc.setTextColor(60,70,90);doc.setFontSize(8.5);doc.setFont('helvetica','normal');
-  const apprLines=doc.splitTextToSize(isES
-    ?'Ningún acuerdo se firmará sin la aprobación completa del Cliente. El Abogado no garantiza el resultado del caso ni el monto de recuperación.'
-    :'No settlement will be made without the Client\'s complete approval. Attorney does not guarantee case outcome or recovery amount.',180);
-  doc.text(apprLines,14,y);y+=apprLines.length*5+12;
+  y=para(`THIS AGREEMENT is made on ${signDate}, between Haque Law, PLLC ("Attorney") and ${signerName} ("Client"), whereby Client retains, appoints, and employs Haque Law, PLLC, to represent Client's interests. In consideration of the mutual promises herein contained, the parties hereto agree as follows:`,y);
+  y+=8;
 
-  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES);
+  y=roman('I','PURPOSE OF REPRESENTATION',y);
+  y=para(`Client hereby fully employs Attorney to manage and handle, as deemed necessary, all claims and causes of action, suit or suits, that may grow out of the same, against any wrongful party, and to prosecute said causes for and on Client's behalf, with or without suit, and to recover all damages and compensation to which Client may be entitled as well as to compromise and settle all claims arising out of:`,y);
+  y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);
+  doc.text('Date of Accident:',14,y);doc.setFont('helvetica','bold');doc.text(caseData.date||'____________',55,y);
+  doc.setFont('helvetica','normal');doc.text('Location of Occurrence:',95,y);doc.setFont('helvetica','bold');doc.text((caseData.city||'____________')+', Texas',150,y);
+  y+=10;
 
-  // PAGE 2 — MEDICAL & EMPLOYMENT AUTHORIZATION
-  doc.addPage();
-  header(isES?'AUTORIZACIÓN MÉDICA Y LABORAL':'MEDICAL & EMPLOYMENT AUTHORIZATION');
-  y=44;
-  doc.setTextColor(60,70,90);doc.setFontSize(9);doc.setFont('helvetica','normal');
-  const medLines=doc.splitTextToSize(isES
-    ?`Yo, ${signerName}, autorizo a Haque Law, PLLC y a Mahmood Haque a solicitar y recibir todo expediente médico, de facturación, y laboral/de nómina relacionado con el accidente del ${caseData.date||'—'}, con el propósito de fundamentar mi reclamo legal. Entiendo que puedo revocar esta autorización por escrito en cualquier momento, y que expira al concluir el litigio o acuerdo.`
-    :`I, ${signerName}, authorize Haque Law, PLLC and Mahmood Haque to request and receive all medical, billing, and employment/payroll records related to the accident on ${caseData.date||'—'}, for the purpose of supporting my legal claim. I understand I may revoke this authorization in writing at any time, and it expires at the conclusion of litigation or settlement.`,180);
-  doc.text(medLines,14,y);y+=medLines.length*5+15;
+  y=roman('II','ATTORNEYS\' FEES',y);
+  y=para(`Except as may otherwise be required by law, if Client recovers any compensation, then Client does hereby assign and convey to Attorney the following undivided interest in Client's claim:`,y);
+  y+=3;
+  doc.setFillColor(201,168,76,0.12);doc.roundedRect(14,y,182,9,1.5,1.5,'F');
+  doc.setFontSize(8.3);doc.setTextColor(20,30,55);doc.setFont('helvetica','bold');doc.text('33 1/3%',18,y+6);
+  doc.setFont('helvetica','normal');doc.text('of any recovery if settled, resolved, or concluded BEFORE a lawsuit is filed.',45,y+6);
+  y+=12;
+  doc.setFillColor(201,168,76,0.12);doc.roundedRect(14,y,182,9,1.5,1.5,'F');
+  doc.setFont('helvetica','bold');doc.text('40%',18,y+6);
+  doc.setFont('helvetica','normal');doc.text('of any recovery if settled, resolved, or adjudicated AFTER a lawsuit is filed.',45,y+6);
+  y+=14;
+  doc.setFont('helvetica','bold');doc.setFontSize(8.8);doc.setTextColor(42,138,90);
+  const feeNote=doc.splitTextToSize('It is understood that if nothing is recovered, either by settlement or trial, Client shall owe Attorneys nothing as a fee.',182);
+  doc.text(feeNote,14,y);y+=feeNote.length*4.6+6;
 
-  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES);
+  y=roman('III','CLIENT APPROVAL IS NECESSARY FOR SETTLEMENT',y);
+  y=para(`Attorney is authorized to engage in settlement negotiations if and when appropriate in its professional judgment. However, no settlement of any nature shall be made for any of the claims or causes of action of Client without the complete approval of Client; nor shall Client obtain any settlement on the aforesaid claims without notice to the attorney.`,y);
+  y+=8;
 
-  // PAGE 3 — NON-SOLICITATION / BARRATRY STATEMENT
-  doc.addPage();
-  header(isES?'DECLARACIÓN DE NO-SOLICITACIÓN':'NON-SOLICITATION STATEMENT');
-  y=44;
-  doc.setTextColor(60,70,90);doc.setFontSize(9);doc.setFont('helvetica','normal');
-  const barLines=doc.splitTextToSize(isES
-    ?`Yo, ${signerName}, confirmo que mi decisión de contratar a Haque Law, PLLC fue completamente voluntaria. Nadie me pagó, ofreció dinero, prometió el resultado de mi caso, ni me contactó de forma indebida para conseguir mi contratación, conforme a las leyes de Barratry y Ética de Texas (Texas Government Code §§ 82.065, 82.0651).`
-    :`I, ${signerName}, confirm that my decision to hire Haque Law, PLLC was entirely voluntary. No one paid me, offered money, promised the outcome of my case, or improperly contacted me to secure my hiring, in accordance with the Texas Barratry and Ethics Laws (Texas Government Code §§ 82.065, 82.0651).`,180);
-  doc.text(barLines,14,y);y+=barLines.length*5+15;
+  y=roman('IV','DEDUCTION OF EXPENSES',y);
+  y=para(`Expenses and court costs incurred by Attorney in the handling of this matter (deposition costs, expert witness fees, filing fees, mediation fees, subpoenas, etc.) will be deducted from Client's share of the recovery, after deduction of Attorney fees, and reimbursed at the time they are recovered. If no recovery is made, there will be no fees or expenses due to Attorney by Client.`,y);
 
-  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES);
+  /* ══════════ PAGE 2 — SIGNATURE + REMAINING PROVISIONS ══════════ */
+  doc.addPage();letterhead();
+  y=48;
+  y=roman('V','COOPERATION OF CLIENT',y);
+  y=para(`Client shall keep Attorney advised of Client's current address and telephone numbers at all times, shall appear on reasonable notice at any and all depositions, meetings and court appearances, and shall comply with all reasonable requests of Attorney in connection with the preparation and presentation of Client's claim.`,y);
+  y+=8;
 
-  doc.setFillColor(240,240,245);doc.rect(0,277,210,20,'F');
-  doc.setTextColor(100,115,140);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
-  doc.text('Haque Law, PLLC  |  (281) 417-8311  |  '+new Date().toLocaleDateString(),105,287,{align:'center'});
-  doc.text(isES?'Documento generado electrónicamente — AyudaLegalTX.org':'Electronically generated document — AyudaLegalTX.org',105,293,{align:'center'});
+  y=roman('VI','GENERAL PROVISIONS',y);
+  const provisions=[
+    ['A.','TEXAS LAW TO APPLY.','This agreement shall be construed under the laws of the State of Texas; obligations are performable in Harris County, Texas.'],
+    ['B.','PARTIES BOUND.','This agreement is binding upon the parties and their heirs, executors, administrators, legal representatives, successors, and assigns.'],
+    ['C.','PRIOR AGREEMENTS.','This agreement constitutes the sole agreement of the parties and supersedes any prior understandings. Modification requires written signature of both parties.'],
+    ['D.','REPRESENTATIONS.','Client understands Attorney cannot warrant or guarantee the outcome of the case or the amount of any recovery.']
+  ];
+  provisions.forEach(([letter,title,text])=>{
+    doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(20,30,55);
+    doc.text(letter,18,y);doc.text(title,25,y);
+    doc.setFont('helvetica','normal');
+    const pl=doc.splitTextToSize(text,168);
+    doc.text(pl,25,y+4.5);y+=4.5+pl.length*4.3+4;
+  });
+
+  y+=8;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text('EXECUTED on signed date above.',14,y);y+=14;
+  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,false);y+=32;
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(60,70,90);
+  doc.text('Haque Law, PLLC',14,y);
+  doc.setFont('helvetica','bold');doc.text('Mahmood Haque, Esq.',14,y+4.5);
+  doc.setFont('helvetica','normal');doc.text('Attorney and Counselor at Law',14,y+9);
+
+  /* ══════════ PAGE 3 — EXHIBIT A: NON-SOLICITATION STATEMENT ══════════ */
+  doc.addPage();letterhead();
+  y=48;
+  doc.setTextColor(20,30,55);doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text('EXHIBIT A',105,y,{align:'center'});y+=6;
+  doc.setFontSize(9.5);
+  doc.text('HAQUE LAW, PLLC — CLIENT NON-SOLICITATION STATEMENT',105,y,{align:'center'});y+=10;
+
+  y=para(`The Client understands and agrees this statement, if signed, becomes part of the representation agreement with HAQUE LAW, PLLC. As part of Client's decision to hire, employ, or consent to the association of HAQUE LAW, PLLC, Client states and affirms that:`,y,8.3);
+  y+=4;
+  const affirmations=[
+    'No one paid, gave, or advanced money or anything of value to Client in connection with the decision to hire this law firm.',
+    'No one offered to pay or advance money or anything of value in exchange for agreeing to hire this law firm.',
+    'No one stated that the claim would be successful or made promises about the outcome of the case.',
+    'No one stated that HAQUE LAW, PLLC could influence a judge in any improper way in connection with this claim.',
+    'No lawyer contacted Client or a relative in person, in writing, or by phone concerning this accident within 31 days of the event, unless Client first sought that lawyer\'s advice or representation.',
+    'All decisions were voluntary and of Client\'s own free will — no one tried to force, coerce, trick, mislead, harass, deceive, or intimidate Client into hiring this law firm.'
+  ];
+  doc.setFontSize(8.2);doc.setFont('helvetica','normal');
+  affirmations.forEach((t,i)=>{
+    const lines=doc.splitTextToSize((i+1)+'. '+t,175);
+    doc.text(lines,18,y);y+=lines.length*4.3+2.5;
+  });
+  y+=4;
+  doc.setFont('helvetica','bold');doc.setFontSize(7.8);doc.setTextColor(60,70,90);
+  const indemn=doc.splitTextToSize('CLIENT AGREES TO INDEMNIFY, DEFEND, AND HOLD HARMLESS HAQUE LAW, PLLC AND ITS LAWYERS FROM ANY CLAIM BROUGHT UNDER TEXAS GOVERNMENT CODE §§ 82.065 OR 82.0651 RELATING TO THIS AGREEMENT. Client has been advised to seek independent legal counsel about these requirements before agreeing to this provision.',182);
+  doc.text(indemn,14,y);y+=indemn.length*4+10;
+
+  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,false);y+=32;
+  doc.setFontSize(7.3);doc.setTextColor(100,115,140);doc.setFont('helvetica','normal');
+  const notice=doc.splitTextToSize('NOTICE TO CLIENTS — The State Bar of Texas investigates professional misconduct by Texas attorneys. To file a complaint, call 1 (800) 932-1900 toll-free.',182);
+  doc.text(notice,14,y);
+
+  /* ══════════ PAGE 4 — MEDICAL & EMPLOYMENT AUTHORIZATION ══════════ */
+  doc.addPage();letterhead();
+  y=48;
+  doc.setTextColor(20,30,55);doc.setFontSize(11);doc.setFont('helvetica','bold');
+  doc.text('MEDICAL & EMPLOYMENT RECORDS AUTHORIZATION',105,y,{align:'center'});y+=10;
+
+  doc.setFontSize(8.5);doc.setFont('helvetica','normal');
+  doc.text('Printed Name:',14,y);doc.setFont('helvetica','bold');doc.text(signerName,50,y);
+  doc.setFont('helvetica','normal');doc.text('Date:',130,y);doc.setFont('helvetica','bold');doc.text(signDate,145,y);
+  y+=10;
+
+  y=para(`I authorize Haque Law, PLLC and Mahmood Haque, Esq. to request and receive all medical records, billing records, and employment/payroll records related to the accident occurring on ${caseData.date||'the date above'} in ${caseData.city||'Texas'}, for the purpose of pursuing my personal injury claim. This includes history and physical exams, diagnosis and treatment records, billing records, and employment/payroll information relevant to lost wages.`,y);
+  y+=8;
+
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text('Who to send information to:',14,y);y+=5;
+  doc.setFont('helvetica','normal');
+  doc.text('Firm Name: Haque Law, PLLC',14,y);y+=4.5;
+  doc.text('Contact: Mahmood Haque, Attorney',14,y);y+=4.5;
+  doc.text('Phone: (281) 417-8311  ·  Fax: (281) 417-8356',14,y);y+=4.5;
+  doc.text('Address: 1111 N Loop W Ste 500, Houston, TX 77008',14,y);y+=10;
+
+  doc.setFontSize(7.5);doc.setTextColor(100,115,140);
+  const revoke=doc.splitTextToSize('I understand I do not have to sign this authorization and my treatment will not be denied if I do not sign. I may revoke this authorization in writing at any time; unless revoked, it expires at the conclusion of litigation or settlement of all claims.',182);
+  doc.text(revoke,14,y);y+=revoke.length*4+10;
+
+  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,false);
+
+  doc.setFillColor(240,240,245);doc.rect(0,283,210,14,'F');
+  doc.setTextColor(100,115,140);doc.setFontSize(6.5);doc.setFont('helvetica','normal');
+  doc.text('Haque Law, PLLC  ·  (281) 417-8311  ·  Generated electronically via AyudaLegalTX.org  ·  '+new Date().toLocaleDateString(),105,290,{align:'center'});
 
   const safeName=signerName.replace(/\s+/g,'-');
   const safeDate=signDate.split('/').join('-');
