@@ -949,7 +949,9 @@ function generatePOAPDF(signerName,signDate,sigDataUrl){
   doc.text('Haque Law, PLLC  |  (281) 417-8311  |  '+new Date().toLocaleDateString(),105,287,{align:'center'});
   doc.text(isES?'Documento generado electrónicamente — AyudaLegalTX.org':'Electronically generated document — AyudaLegalTX.org',105,293,{align:'center'});
 
-  doc.save(`POA-signed-${signerName.replace(/\\s+/g,'-')}-${signDate.replace(/\\//g,'-')}.pdf`);
+  const safeName=signerName.replace(/\s+/g,'-');
+  const safeDate=signDate.split('/').join('-');
+  doc.save(`POA-signed-${safeName}-${safeDate}.pdf`);
 }
 
 function addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES){
