@@ -38,6 +38,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:.9rem 2rem;display:f
 .lang-btn{background:none;border:none;color:var(--gray);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;padding:4px 11px;border-radius:16px;cursor:pointer;transition:.2s}
 .lang-btn.active{background:var(--gold);color:var(--navy)}
 .call-nav{background:var(--red);color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.82rem;padding:7px 18px;border-radius:6px;cursor:pointer;text-decoration:none}
+.wa-nav{background:#25D366;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.82rem;padding:7px 18px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.btn-whatsapp{background:#25D366;color:white;border:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.88rem;padding:11px 28px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:.2s}
+.btn-whatsapp:hover{background:#1fb855}
 
 /* HERO EMOTIONAL */
 .hero{padding:110px 2rem 70px;max-width:820px;margin:0 auto;text-align:center}
@@ -216,6 +219,7 @@ footer a:hover{color:var(--gray)}
       <button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
     </div>
     <a href="tel:+18329352158" class="call-nav" id="nav-call">Llamar ahora</a>
+    <a href="https://wa.me/18329352158?text=Hola%2C%20tuve%20un%20accidente%20y%20necesito%20ayuda" target="_blank" class="wa-nav" id="nav-wa">💬 WhatsApp</a>
   </div>
 </nav>
 
@@ -238,6 +242,7 @@ footer a:hover{color:var(--gray)}
   </div>
   <div class="cta-pair">
     <a href="#forma" class="btn-primary" id="cta-main">Cuéntanos qué pasó →</a>
+    <a href="https://wa.me/18329352158?text=Hola%2C%20tuve%20un%20accidente%20y%20necesito%20ayuda" target="_blank" class="btn-whatsapp" id="cta-wa">💬 <span id="cta-wa-text">Escríbenos por WhatsApp</span></a>
     <a href="tel:+18329352158" class="btn-call" id="cta-call">📞 <span id="cta-call-text">Prefiero llamar ahora</span></a>
     <span class="cta-sub" id="cta-sub">Gratis · 2 minutos · Respuesta inmediata</span>
   </div>
@@ -523,7 +528,7 @@ es:{
 'hero-title':'<span class="calm">Estás a salvo.</span><br><span class="accent">Y tienes derechos.</span>',
 'hero-body':'Sabemos que estás asustado(a). Es normal. Estamos aquí para guiarte paso a paso — <strong>sin presiones, sin costos, sin compromisos</strong>. Solo dinos qué pasó.',
 't1':'100% confidencial','t2':'En español e inglés','t3':'Red médica incluida','t4':'Sin costo para ti',
-'cta-main':'Cuéntanos qué pasó →','cta-call-text':'Prefiero llamar ahora','cta-sub':'Gratis · 2 minutos · Respuesta inmediata',
+'cta-main':'Cuéntanos qué pasó →','cta-call-text':'Prefiero llamar ahora','cta-wa-text':'Escríbenos por WhatsApp','cta-sub':'Gratis · 2 minutos · Respuesta inmediata',
 'r1t':'Atención médica sin pagar hoy','r1d':'Tenemos red de médicos que te atienden ahora. El pago sale del acuerdo, no de tu bolsillo.',
 'r2t':'Sin reporte policial también hay caso','r2d':'Muchos casos ganan sin reporte. Los registros médicos y testigos también cuentan.',
 'r3t':'Actúa antes de las 48 horas','r3d':'La evidencia es más fuerte en las primeras horas. Estamos disponibles ahora mismo.',
@@ -563,7 +568,7 @@ en:{
 'hero-title':'<span class="calm">You are safe.</span><br><span class="accent">And you have rights.</span>',
 'hero-body':'We know you\'re scared. That\'s normal. We\'re here to guide you step by step — <strong>no pressure, no cost, no commitment</strong>. Just tell us what happened.',
 't1':'100% confidential','t2':'Spanish & English','t3':'Medical network included','t4':'No cost to you',
-'cta-main':'Tell us what happened →','cta-call-text':'I prefer to call now','cta-sub':'Free · 2 minutes · Immediate response',
+'cta-main':'Tell us what happened →','cta-call-text':'I prefer to call now','cta-wa-text':'Message us on WhatsApp','cta-sub':'Free · 2 minutes · Immediate response',
 'r1t':'Medical care with no money today','r1d':'Our network doctors see you now. Payment comes from the settlement, not your pocket.',
 'r2t':'No police report? You may still have a case','r2d':'Many cases win without a report. Medical records and witnesses count too.',
 'r3t':'Act within 48 hours','r3d':'Evidence is strongest in the first hours. We are available right now.',
