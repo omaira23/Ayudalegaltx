@@ -8,6 +8,37 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
+/* ── Rate limiting simple, sin dependencias nuevas ──
+   Limite: 15 mensajes cada 10 minutos por IP.
+   Suficiente para una conversacion real, bloquea abuso/bots. */
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 15;
+const requestLog = new Map();
+
+function rateLimiter(req, res, next) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress;
+  const now = Date.now();
+  const timestamps = (requestLog.get(ip) || []).filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+
+  if (timestamps.length >= RATE_LIMIT_MAX) {
+    return res.status(429).json({ error: 'Demasiados mensajes. Intenta de nuevo en unos minutos.' });
+  }
+
+  timestamps.push(now);
+  requestLog.set(ip, timestamps);
+  next();
+}
+
+// Limpieza periodica para no acumular memoria indefinidamente
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, timestamps] of requestLog.entries()) {
+    const fresh = timestamps.filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+    if (fresh.length === 0) requestLog.delete(ip);
+    else requestLog.set(ip, fresh);
+  }
+}, 5 * 60 * 1000);
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const FIRM_EMAIL = process.env.GMAIL_USER;
@@ -34,6 +65,7 @@ REGLAS ESTRICTAS (nunca las rompas):
 - NUNCA dictamines "sí tienes caso" o "no tienes caso" de forma definitiva — eso lo decide un abogado con la información completa.
 - NUNCA presiones agresivamente ni uses tácticas de miedo. Guía con calma.
 - Da información educativa GENERAL sobre cómo funcionan los reclamos de accidentes en Texas (reportes policiales, documentación médica, seguro UM/UIM, la importancia de actuar rápido) — esto es información pública, no asesoría legal específica de caso.
+- Si es natural en la conversación, menciona que en Texas hay un plazo legal de 2 años desde la fecha del accidente para presentar una demanda por lesión personal (Texas Civil Practice & Remedies Code §16.003) — esto es información pública general, no asesoría de caso. Úsalo para motivar a actuar pronto, nunca de forma alarmista.
 - Cuando la conversación deje claro que la persona tuvo un accidente real y quiere ayuda, guía naturalmente hacia recopilar: nombre, teléfono, ciudad, fecha del accidente, y una breve descripción — para que un especialista humano la contacte. No lo hagas como interrogatorio; hazlo como parte natural de la conversación.
 - En cuanto tengas nombre + teléfono + ciudad + una descripción mínima de qué pasó, usa la herramienta capture_lead para registrar el caso. Hazlo tan pronto tengas esos datos, no esperes a tener todo perfecto.
 - Sé cálido, directo, en oraciones cortas. Refleja la emoción de la persona primero (probablemente está asustada), ancla la calma, reencuadra el problema como manejable, y motiva la acción concreta.
@@ -88,7 +120,7 @@ async function sendLeadEmail(lead, source) {
   });
 }
 
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', rateLimiter, async (req, res) => {
   try {
     const { messages, lang, source } = req.body;
     if (!Array.isArray(messages) || messages.length === 0) {
