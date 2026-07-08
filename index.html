@@ -22,8 +22,11 @@ body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;
 
 /* ── FIRM CONFIG ── change per client ── */
 :root{
-  --firm-name:"García & Asociados";
-  --firm-phone:"(832) 935-2158";
+  --firm-name:"Haque Law, PLLC";
+  --firm-phone:"(281) 417-8311";
+  --firm-fax:"(281) 417-8356";
+  --firm-attorney:"Mahmood Haque, Esq.";
+  --firm-address:"1111 North Loop West, Suite 500, Houston, TX 77008";
   --firm-color:#C9A84C;
 }
 
@@ -161,6 +164,31 @@ h1.hero-title .calm{font-style:italic;font-weight:400}
 .btn-dl:hover{background:var(--gold2)}
 .btn-restart{display:block;width:100%;background:none;border:1px solid var(--border2);color:var(--gray);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.88rem;border-radius:8px;cursor:pointer;transition:.2s}
 .btn-restart:hover{border-color:var(--gray);color:var(--white)}
+
+/* POA / SIGNATURE STEP */
+.poa-intro{background:var(--navy3);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem}
+.poa-firm{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.05rem;font-weight:700;margin-bottom:.2rem}
+.poa-attorney{font-size:.78rem;color:var(--gray);margin-bottom:1rem}
+.poa-doc{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:1rem;font-size:.83rem;line-height:1.7;color:rgba(248,245,240,.85);max-height:220px;overflow-y:auto}
+.poa-doc h4{font-family:'Playfair Display',serif;color:var(--gold2);font-size:.92rem;margin:.9rem 0 .4rem}
+.poa-doc h4:first-child{margin-top:0}
+.poa-doc strong{color:var(--white)}
+.poa-fee-row{display:flex;justify-content:space-between;background:rgba(201,168,76,.08);border-radius:6px;padding:.5rem .8rem;margin:.4rem 0;font-size:.82rem}
+.consent-row{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--border2)}
+.consent-row:last-child{border-bottom:none}
+.consent-row input[type="checkbox"]{width:18px;height:18px;margin-top:2px;accent-color:var(--gold);flex-shrink:0;cursor:pointer}
+.consent-row label{font-size:.83rem;color:var(--gray);line-height:1.55;cursor:pointer}
+.consent-row label strong{color:var(--white);font-weight:500}
+.sig-block{margin-top:1.5rem}
+.sig-label{font-size:.82rem;color:var(--gray);margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center}
+.sig-clear{background:none;border:1px solid var(--border2);color:var(--gray);font-size:.72rem;padding:.3rem .7rem;border-radius:6px;cursor:pointer}
+.sig-clear:hover{color:var(--white);border-color:var(--gray)}
+.sig-canvas-wrap{background:#F8F5F0;border:2px dashed rgba(201,168,76,.4);border-radius:10px;overflow:hidden;touch-action:none}
+#sigCanvas{display:block;width:100%;height:160px;cursor:crosshair}
+.sig-hint{font-size:.74rem;color:var(--gray2);margin-top:.4rem;text-align:center}
+.sig-meta{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:1rem}
+.poa-signed-card{background:var(--navy3);border:1px solid var(--green);border-radius:16px;padding:2rem;margin-top:1.5rem;text-align:center}
+.poa-signed-icon{font-size:2.2rem;margin-bottom:.75rem}
 
 /* HOW */
 .how{padding:70px 2rem;max-width:880px;margin:0 auto}
@@ -356,6 +384,54 @@ footer a:hover{color:var(--gray)}
       <div class="agent-body" id="agent-out"><div class="typing"><span></span><span></span><span></span></div></div>
     </div>
     <div id="res-sec"></div>
+  </div>
+
+  <!-- STEP 6 — POA / DIGITAL SIGNATURE -->
+  <div class="fstep" id="step6">
+    <div class="poa-intro">
+      <div class="poa-firm">Haque Law, PLLC</div>
+      <div class="poa-attorney">Mahmood Haque, Esq. · Attorney &amp; Counselor at Law · 1111 North Loop West, Suite 500, Houston, TX 77008 · (281) 417-8311</div>
+
+      <div class="poa-doc">
+        <h4 id="poa-h1">Poder y contrato de representación</h4>
+        <p id="poa-p1">Al firmar, usted emplea a Haque Law, PLLC para manejar todo reclamo relacionado con el accidente descrito, incluyendo negociación y demanda si es necesario.</p>
+        <div class="poa-fee-row"><span id="poa-fee1lbl">Si el caso se resuelve ANTES de una demanda</span><strong>33 1/3%</strong></div>
+        <div class="poa-fee-row"><span id="poa-fee2lbl">Si el caso se resuelve DESPUÉS de una demanda</span><strong>40%</strong></div>
+        <p id="poa-p2"><strong>Si no hay recuperación, usted no paga honorarios.</strong> Ningún acuerdo se firma sin su aprobación.</p>
+
+        <h4 id="poa-h2">Autorización médica y laboral</h4>
+        <p id="poa-p3">Usted autoriza al despacho a solicitar y recibir sus expedientes médicos y laborales relacionados con este caso, incluyendo registros de tratamiento, facturación y récord de pago, para fundamentar su reclamo.</p>
+
+        <h4 id="poa-h3">Declaración de no-solicitación (Ley de Texas)</h4>
+        <p id="poa-p4">Usted confirma que su decisión de contratar a este despacho fue completamente voluntaria — nadie le pagó, presionó, engañó o le prometió un resultado específico para que firmara.</p>
+      </div>
+
+      <div class="consent-row">
+        <input type="checkbox" id="c-fees" onchange="chkSig()">
+        <label for="c-fees" id="c-fees-l">He leído y acepto los <strong>honorarios de contingencia</strong> descritos arriba (33 1/3% / 40%, sin cobro si no hay recuperación).</label>
+      </div>
+      <div class="consent-row">
+        <input type="checkbox" id="c-medical" onchange="chkSig()">
+        <label for="c-medical" id="c-medical-l"><strong>Autorizo</strong> a Haque Law, PLLC a solicitar mis expedientes médicos y laborales relacionados con este caso.</label>
+      </div>
+      <div class="consent-row">
+        <input type="checkbox" id="c-volun" onchange="chkSig()">
+        <label for="c-volun" id="c-volun-l">Confirmo que esta decisión es <strong>voluntaria</strong> — nadie me presionó, engañó o pagó para firmar.</label>
+      </div>
+
+      <div class="sig-meta">
+        <div class="fg"><label id="l-sig-name">Nombre completo (como firma)</label><input type="text" id="sig-name" placeholder="Tu nombre completo" oninput="chkSig()"></div>
+        <div class="fg"><label id="l-sig-date">Fecha</label><input type="text" id="sig-date" disabled></div>
+      </div>
+
+      <div class="sig-block">
+        <div class="sig-label"><span id="sig-lbl">Firma aquí (con el dedo o el mouse)</span><button type="button" class="sig-clear" onclick="clearSig()" id="sig-clear-btn">Borrar firma</button></div>
+        <div class="sig-canvas-wrap"><canvas id="sigCanvas"></canvas></div>
+        <p class="sig-hint" id="sig-hint">Su firma tiene la misma validez que una firma manuscrita para efectos de este acuerdo.</p>
+      </div>
+
+      <button class="btn-next" id="n6" disabled onclick="signPOA()" style="margin-top:1.25rem" id="btn-sign">Firmar y autorizar representación →</button>
+    </div>
   </div>
 </section>
 
@@ -619,7 +695,8 @@ function showResult(){
       <div class="res-row"><span class="res-k">${isES?'Seguro':'Insurance'}</span><span class="res-v res-${iV}">${iT}</span></div>
       <div class="res-row"><span class="res-k">${isES?'Atención médica':'Medical care'}</span><span class="res-v res-${mV}">${mT}</span></div>
     </div>
-    <button class="btn-dl" onclick="makePDF()">⬇ ${isES?'Descargar resumen PDF':'Download PDF summary'}</button>
+    <button class="btn-dl" onclick="goToSign()">✍ ${isES?'Firmar autorización con el abogado':'Sign authorization with the attorney'}</button>
+    <button class="btn-dl" style="background:transparent;border:1px solid var(--border);color:var(--gold)" onclick="makePDF()">⬇ ${isES?'Descargar resumen PDF':'Download PDF summary'}</button>
     <button class="btn-restart" onclick="location.reload()">${isES?'Evaluar otro caso':'Evaluate another case'}</button>
   </div>`;
 }
@@ -696,7 +773,195 @@ function makePDF(){
   doc.save(`lead-PI-${caseData.name.replace(/\s+/g,'-')}-${caseData.date||new Date().toISOString().split('T')[0]}.pdf`);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{document.getElementById('f-date').max=new Date().toISOString().split('T')[0];});
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('f-date').max=new Date().toISOString().split('T')[0];
+  initSigPad();
+});
+
+/* ───────── SIGNATURE PAD ───────── */
+let sigCtx,sigDrawing=false,sigHasStroke=false,sigCanvas;
+
+function initSigPad(){
+  sigCanvas=document.getElementById('sigCanvas');
+  if(!sigCanvas)return;
+  const resize=()=>{
+    const rect=sigCanvas.getBoundingClientRect();
+    const ratio=window.devicePixelRatio||1;
+    sigCanvas.width=rect.width*ratio;
+    sigCanvas.height=160*ratio;
+    sigCtx=sigCanvas.getContext('2d');
+    sigCtx.scale(ratio,ratio);
+    sigCtx.strokeStyle='#0B1628';
+    sigCtx.lineWidth=2.2;
+    sigCtx.lineCap='round';
+    sigCtx.lineJoin='round';
+  };
+  resize();
+  window.addEventListener('resize',resize);
+
+  const pos=e=>{
+    const rect=sigCanvas.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    return{x:t.clientX-rect.left,y:t.clientY-rect.top};
+  };
+  const start=e=>{e.preventDefault();sigDrawing=true;const p=pos(e);sigCtx.beginPath();sigCtx.moveTo(p.x,p.y);};
+  const move=e=>{if(!sigDrawing)return;e.preventDefault();const p=pos(e);sigCtx.lineTo(p.x,p.y);sigCtx.stroke();sigHasStroke=true;chkSig();};
+  const end=e=>{sigDrawing=false;};
+
+  sigCanvas.addEventListener('mousedown',start);
+  sigCanvas.addEventListener('mousemove',move);
+  window.addEventListener('mouseup',end);
+  sigCanvas.addEventListener('touchstart',start,{passive:false});
+  sigCanvas.addEventListener('touchmove',move,{passive:false});
+  sigCanvas.addEventListener('touchend',end);
+}
+
+function clearSig(){
+  if(!sigCtx)return;
+  sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigHasStroke=false;
+  chkSig();
+}
+
+function chkSig(){
+  const ok=sigHasStroke&&document.getElementById('c-fees').checked&&document.getElementById('c-medical').checked&&document.getElementById('c-volun').checked&&document.getElementById('sig-name').value.trim().length>2;
+  const btn=document.getElementById('n6');
+  if(btn)btn.disabled=!ok;
+}
+
+function goToSign(){
+  document.getElementById('sig-date').value=new Date().toLocaleDateString('es-MX',{timeZone:'America/Chicago'});
+  document.getElementById('sig-name').value=caseData.name||'';
+  go(6);
+  setTimeout(()=>{if(sigCtx)initSigPad();},50);
+}
+
+async function signPOA(){
+  const isES=lang==='es';
+  const sigDataUrl=sigCanvas.toDataURL('image/png');
+  const signerName=document.getElementById('sig-name').value.trim();
+  const signDate=document.getElementById('sig-date').value;
+
+  generatePOAPDF(signerName,signDate,sigDataUrl);
+
+  // Notify the firm that the client signed — reuses the lead email pipeline
+  if(window.emailjs){
+    try{
+      await emailjs.send(EJS_SERVICE,EJS_TEMPLATE,{
+        to_email:'rozoma@gmail.com',
+        subject:'✍ AUTORIZACIÓN FIRMADA — '+signerName+' ('+(caseData.city||'—')+')',
+        client_name:signerName,
+        client_phone:caseData.phone||'—',
+        client_email:caseData.email||'—',
+        client_city:caseData.city||'—',
+        accident_date:caseData.date||'—',
+        police_report:'—',
+        insurance:'—',
+        medical:'—',
+        priority:'AUTORIZACIÓN Y FIRMA COMPLETADAS — Haque Law, PLLC',
+        notes:'Cliente firmó digitalmente el Power of Attorney + autorizaciones médica/laboral el '+signDate+'. PDF firmado descargado en su dispositivo — solicitar copia si es necesario para el expediente.',
+        timestamp:signDate
+      });
+    }catch(e){console.log('EmailJS error (POA):',e);}
+  }
+
+  document.getElementById('step6').innerHTML=`
+    <div class="poa-signed-card">
+      <div class="poa-signed-icon">✅</div>
+      <div class="result-title">${isES?'Autorización firmada con éxito':'Authorization signed successfully'}</div>
+      <p class="result-sub">${isES?'Haque Law, PLLC ha recibido tu autorización. Un especialista te contactará en breve para los siguientes pasos.':'Haque Law, PLLC has received your authorization. A specialist will contact you shortly with next steps.'}</p>
+      <button class="btn-restart" onclick="location.reload()">${isES?'Cerrar':'Close'}</button>
+    </div>`;
+}
+
+function generatePOAPDF(signerName,signDate,sigDataUrl){
+  const{jsPDF}=window.jspdf;const doc=new jsPDF();
+  const isES=lang==='es';
+
+  const header=(title)=>{
+    doc.setFillColor(255,255,255);doc.rect(0,0,210,297,'F');
+    doc.setFillColor(11,22,40);doc.rect(0,0,210,20,'F');
+    doc.setTextColor(201,168,76);doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text('HAQUE LAW, PLLC',14,12);
+    doc.setTextColor(255,255,255);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+    doc.text('Mahmood Haque, Esq. · 1111 North Loop West, Suite 500, Houston, TX 77008 · (281) 417-8311',14,17);
+    doc.setTextColor(20,30,55);doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text(title,105,32,{align:'center'});
+  };
+
+  // PAGE 1 — POA & FEE AGREEMENT
+  header(isES?'PODER Y CONTRATO DE REPRESENTACIÓN':'POWER OF ATTORNEY & FEE AGREEMENT');
+  let y=44;
+  doc.setTextColor(60,70,90);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  const introLines=doc.splitTextToSize(isES
+    ?`Este acuerdo se hace el ${signDate}, entre Haque Law, PLLC ("Abogado") y ${signerName} ("Cliente"). El Cliente contrata al Abogado para manejar todo reclamo relacionado con el accidente ocurrido el ${caseData.date||'—'} en ${caseData.city||'—'}, Texas, incluyendo negociación de acuerdo y demanda si fuera necesario.`
+    :`This agreement is made on ${signDate}, between Haque Law, PLLC ("Attorney") and ${signerName} ("Client"). Client retains Attorney to handle all claims related to the accident on ${caseData.date||'—'} in ${caseData.city||'—'}, Texas, including settlement negotiation and litigation if necessary.`,180);
+  doc.text(introLines,14,y);y+=introLines.length*5+8;
+
+  doc.setTextColor(201,168,76);doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text(isES?'HONORARIOS DE CONTINGENCIA':'CONTINGENCY FEE',14,y);doc.line(14,y+2,196,y+2);y+=9;
+  doc.setFillColor(201,168,76,0.1);doc.roundedRect(14,y,182,9,2,2,'F');
+  doc.setTextColor(20,30,55);doc.setFontSize(8.5);doc.setFont('helvetica','normal');
+  doc.text(isES?'Antes de presentar demanda:':'Before lawsuit is filed:',18,y+6);
+  doc.setFont('helvetica','bold');doc.text('33 1/3%',150,y+6);y+=13;
+  doc.setFillColor(201,168,76,0.1);doc.roundedRect(14,y,182,9,2,2,'F');
+  doc.setFont('helvetica','normal');doc.text(isES?'Después de presentar demanda:':'After lawsuit is filed:',18,y+6);
+  doc.setFont('helvetica','bold');doc.text('40%',150,y+6);y+=15;
+  doc.setTextColor(42,138,90);doc.setFontSize(9);doc.setFont('helvetica','bold');
+  doc.text(isES?'Si no hay recuperación, el Cliente no debe honorarios.':'If nothing is recovered, Client owes no fee.',14,y);y+=10;
+
+  doc.setTextColor(201,168,76);doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text(isES?'APROBACIÓN DEL CLIENTE':'CLIENT APPROVAL',14,y);doc.line(14,y+2,196,y+2);y+=8;
+  doc.setTextColor(60,70,90);doc.setFontSize(8.5);doc.setFont('helvetica','normal');
+  const apprLines=doc.splitTextToSize(isES
+    ?'Ningún acuerdo se firmará sin la aprobación completa del Cliente. El Abogado no garantiza el resultado del caso ni el monto de recuperación.'
+    :'No settlement will be made without the Client\'s complete approval. Attorney does not guarantee case outcome or recovery amount.',180);
+  doc.text(apprLines,14,y);y+=apprLines.length*5+12;
+
+  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES);
+
+  // PAGE 2 — MEDICAL & EMPLOYMENT AUTHORIZATION
+  doc.addPage();
+  header(isES?'AUTORIZACIÓN MÉDICA Y LABORAL':'MEDICAL & EMPLOYMENT AUTHORIZATION');
+  y=44;
+  doc.setTextColor(60,70,90);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  const medLines=doc.splitTextToSize(isES
+    ?`Yo, ${signerName}, autorizo a Haque Law, PLLC y a Mahmood Haque a solicitar y recibir todo expediente médico, de facturación, y laboral/de nómina relacionado con el accidente del ${caseData.date||'—'}, con el propósito de fundamentar mi reclamo legal. Entiendo que puedo revocar esta autorización por escrito en cualquier momento, y que expira al concluir el litigio o acuerdo.`
+    :`I, ${signerName}, authorize Haque Law, PLLC and Mahmood Haque to request and receive all medical, billing, and employment/payroll records related to the accident on ${caseData.date||'—'}, for the purpose of supporting my legal claim. I understand I may revoke this authorization in writing at any time, and it expires at the conclusion of litigation or settlement.`,180);
+  doc.text(medLines,14,y);y+=medLines.length*5+15;
+
+  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES);
+
+  // PAGE 3 — NON-SOLICITATION / BARRATRY STATEMENT
+  doc.addPage();
+  header(isES?'DECLARACIÓN DE NO-SOLICITACIÓN':'NON-SOLICITATION STATEMENT');
+  y=44;
+  doc.setTextColor(60,70,90);doc.setFontSize(9);doc.setFont('helvetica','normal');
+  const barLines=doc.splitTextToSize(isES
+    ?`Yo, ${signerName}, confirmo que mi decisión de contratar a Haque Law, PLLC fue completamente voluntaria. Nadie me pagó, ofreció dinero, prometió el resultado de mi caso, ni me contactó de forma indebida para conseguir mi contratación, conforme a las leyes de Barratry y Ética de Texas (Texas Government Code §§ 82.065, 82.0651).`
+    :`I, ${signerName}, confirm that my decision to hire Haque Law, PLLC was entirely voluntary. No one paid me, offered money, promised the outcome of my case, or improperly contacted me to secure my hiring, in accordance with the Texas Barratry and Ethics Laws (Texas Government Code §§ 82.065, 82.0651).`,180);
+  doc.text(barLines,14,y);y+=barLines.length*5+15;
+
+  addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES);
+
+  doc.setFillColor(240,240,245);doc.rect(0,277,210,20,'F');
+  doc.setTextColor(100,115,140);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+  doc.text('Haque Law, PLLC  |  (281) 417-8311  |  '+new Date().toLocaleDateString(),105,287,{align:'center'});
+  doc.text(isES?'Documento generado electrónicamente — AyudaLegalTX.org':'Electronically generated document — AyudaLegalTX.org',105,293,{align:'center'});
+
+  doc.save(`POA-signed-${signerName.replace(/\\s+/g,'-')}-${signDate.replace(/\\//g,'-')}.pdf`);
+}
+
+function addSignatureBlock(doc,y,signerName,signDate,sigDataUrl,isES){
+  doc.setDrawColor(200,200,200);doc.line(14,y+22,90,y+22);
+  doc.addImage(sigDataUrl,'PNG',14,y,70,20);
+  doc.setTextColor(100,115,140);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+  doc.text(isES?'Firma del Cliente':'Client Signature',14,y+27);
+  doc.setTextColor(20,30,55);doc.setFontSize(8.5);doc.setFont('helvetica','bold');
+  doc.text(signerName,110,y+15);
+  doc.setTextColor(100,115,140);doc.setFontSize(7.5);doc.setFont('helvetica','normal');
+  doc.text((isES?'Nombre impreso · Fecha: ':'Printed name · Date: ')+signDate,110,y+20);
+}
 </script>
 </body>
 </html>
