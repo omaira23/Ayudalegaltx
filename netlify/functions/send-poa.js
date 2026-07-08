@@ -14,7 +14,8 @@ exports.handler = async (event) => {
       signerCity,
       signerEmail,
       accidentDate,
-      signDate
+      signDate,
+      leadSource
     } = JSON.parse(event.body);
 
     if (!pdfBase64 || !signerName) {
@@ -39,10 +40,11 @@ exports.handler = async (event) => {
     await transporter.sendMail({
       from: `AyudaLegalTX <${GMAIL_USER}>`,
       to: GMAIL_USER,
-      subject: `✍ POA FIRMADO (PDF adjunto) — ${signerName} (${signerCity || '—'})`,
+      subject: `[${leadSource || 'Fuente desconocida'}] ✍ POA FIRMADO (PDF adjunto) — ${signerName} (${signerCity || '—'})`,
       text: [
         `Autorización firmada digitalmente — lista para reenviar a Haque Law.`,
         ``,
+        `Fuente del lead: ${leadSource || '—'}`,
         `Cliente: ${signerName}`,
         `Teléfono: ${signerPhone || '—'}`,
         `Email: ${signerEmail || '—'}`,

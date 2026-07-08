@@ -456,6 +456,35 @@ footer a:hover{color:var(--gray)}
 const A={report:'',insurance:'',medical:''};
 let step=1,lang='es',caseData={};
 
+/* ───────── SOURCE / UTM TRACKING ───────── */
+function captureSource(){
+  const params=new URLSearchParams(window.location.search);
+  const utmSource=params.get('utm_source');
+  const utmMedium=params.get('utm_medium');
+  const utmCampaign=params.get('utm_campaign');
+
+  let label;
+  if(utmSource){
+    label=utmSource+(utmMedium?' / '+utmMedium:'')+(utmCampaign?' ('+utmCampaign+')':'');
+    sessionStorage.setItem('leadSource',label);
+  }else{
+    const existing=sessionStorage.getItem('leadSource');
+    if(existing){label=existing;}
+    else if(document.referrer){
+      try{
+        const refHost=new URL(document.referrer).hostname.replace('www.','');
+        label=refHost+' (orgánico)';
+      }catch(e){label='Directo / desconocido';}
+      sessionStorage.setItem('leadSource',label);
+    }else{
+      label='Directo / desconocido';
+      sessionStorage.setItem('leadSource',label);
+    }
+  }
+  return label;
+}
+const leadSource=captureSource();
+
 const EJS_SERVICE='rozoma@gmail.com';
 const EJS_TEMPLATE='template_fo8h6o8';
 const EJS_PUBLIC='vZL7leZu-7boJikz_';
@@ -470,7 +499,7 @@ async function sendLeadEmail(data){
   try{
     await emailjs.send(EJS_SERVICE,EJS_TEMPLATE,{
       to_email:'rozoma@gmail.com',
-      subject:'Nuevo Lead PI — '+pLabel+' — '+data.name+' ('+data.city+')',
+      subject:'['+leadSource+'] Nuevo Lead PI — '+pLabel+' — '+data.name+' ('+data.city+')',
       client_name:data.name,
       client_phone:data.phone,
       client_email:data.email||'—',
@@ -480,7 +509,7 @@ async function sendLeadEmail(data){
       insurance:insT,
       medical:medT,
       priority:pLabel,
-      notes:data.notes||'Sin notas',
+      notes:'📍 Fuente: '+leadSource+'\n\n'+(data.notes||'Sin notas'),
       timestamp:data.ts
     });
     console.log('Lead email sent');
@@ -849,7 +878,7 @@ async function signPOA(){
     try{
       await emailjs.send(EJS_SERVICE,EJS_TEMPLATE,{
         to_email:'rozoma@gmail.com',
-        subject:'✍ AUTORIZACIÓN FIRMADA — '+signerName+' ('+(caseData.city||'—')+')',
+        subject:'['+leadSource+'] ✍ AUTORIZACIÓN FIRMADA — '+signerName+' ('+(caseData.city||'—')+')',
         client_name:signerName,
         client_phone:caseData.phone||'—',
         client_email:caseData.email||'—',
@@ -859,7 +888,7 @@ async function signPOA(){
         insurance:'—',
         medical:'—',
         priority:'AUTORIZACIÓN Y FIRMA COMPLETADAS — Haque Law, PLLC',
-        notes:'Cliente firmó digitalmente. El PDF firmado llega en un correo aparte (con el documento adjunto) en los próximos segundos.',
+        notes:'📍 Fuente: '+leadSource+'\n\nCliente firmó digitalmente. El PDF firmado llega en un correo aparte (con el documento adjunto) en los próximos segundos.',
         timestamp:signDate
       });
     }catch(e){console.log('EmailJS error (POA):',e);}
@@ -878,7 +907,8 @@ async function signPOA(){
         signerEmail:caseData.email||'',
         signerCity:caseData.city||'',
         accidentDate:caseData.date||'',
-        signDate:signDate
+        signDate:signDate,
+        leadSource:leadSource
       })
     });
   }catch(e){console.log('PDF email delivery error:',e);}
