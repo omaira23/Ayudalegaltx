@@ -103,6 +103,26 @@ h1.hero-title .calm{font-style:italic;font-weight:400}
 .form-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:.6rem}
 .form-sub{font-size:.9rem;color:var(--gray)}
 
+/* MODE TABS */
+.mode-tabs{display:flex;gap:.6rem;margin-bottom:1.75rem}
+.mode-tab{flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border2);color:var(--gray);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.85rem;padding:.8rem;border-radius:10px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.mode-tab:hover{border-color:rgba(201,168,76,.4)}
+.mode-tab.active{background:var(--gold3);border-color:var(--gold);color:var(--gold2)}
+
+/* CHAT WIDGET */
+.chat-box{background:var(--navy3);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;height:480px;overflow:hidden}
+.chat-messages{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:.9rem}
+.chat-msg{max-width:85%;padding:.7rem 1rem;border-radius:12px;font-size:.88rem;line-height:1.55}
+.chat-msg.bot{background:rgba(255,255,255,0.05);color:var(--white);align-self:flex-start;border-bottom-left-radius:3px}
+.chat-msg.user{background:var(--gold);color:var(--navy);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500}
+.chat-msg.typing{background:rgba(255,255,255,0.05);align-self:flex-start;padding:.9rem 1.1rem}
+.chat-input-row{display:flex;gap:.6rem;padding:1rem;border-top:1px solid var(--border2)}
+.chat-input-row input{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.9rem;padding:.7rem .95rem;outline:none}
+.chat-input-row input:focus{border-color:rgba(201,168,76,.5)}
+.chat-send{background:var(--gold);color:var(--navy);border:none;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;padding:0 1.3rem;border-radius:8px;cursor:pointer}
+.chat-send:hover{background:var(--gold2)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+
 .step-bar{display:flex;gap:6px;margin-bottom:2.25rem}
 .step-bar-item{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.08);transition:.4s}
 .step-bar-item.done{background:var(--gold)}
@@ -305,6 +325,12 @@ footer a:hover{color:var(--gray)}
     <p class="form-sub" id="fs">4 preguntas. Nuestro agente evalúa tu caso en tiempo real — de día o de madrugada.</p>
   </div>
 
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tab-form" onclick="switchMode('form')">📋 <span id="tab-form-t">Formulario rápido</span></button>
+    <button class="mode-tab" id="tab-chat" onclick="switchMode('chat')">💬 <span id="tab-chat-t">Chatear con el asistente</span></button>
+  </div>
+
+  <div id="quickFormFlow">
   <div class="step-bar">
     <div class="step-bar-item active" id="d1"></div>
     <div class="step-bar-item" id="d2"></div>
@@ -438,6 +464,18 @@ footer a:hover{color:var(--gray)}
       <button class="btn-next" id="n6" disabled onclick="signPOA()" style="margin-top:1.25rem" id="btn-sign">Firmar y autorizar representación →</button>
     </div>
   </div>
+  </div><!-- /quickFormFlow -->
+
+  <!-- CHAT FLOW -->
+  <div id="chatFlow" style="display:none">
+    <div class="chat-box">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Escribe aquí..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+        <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">Enviar</button>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -489,6 +527,74 @@ function captureSource(){
   return label;
 }
 const leadSource=captureSource();
+
+/* ───────── CONVERSATIONAL AGENT (chat mode) ───────── */
+const AGENT_API_URL='https://REEMPLAZAR-CON-URL-DE-RAILWAY.up.railway.app/api/chat'; // TODO: update after Railway deploy
+let chatHistory=[];
+let chatStarted=false;
+
+function switchMode(mode){
+  const isForm=mode==='form';
+  document.getElementById('tab-form').classList.toggle('active',isForm);
+  document.getElementById('tab-chat').classList.toggle('active',!isForm);
+  document.getElementById('quickFormFlow').style.display=isForm?'':'none';
+  document.getElementById('chatFlow').style.display=isForm?'none':'';
+  if(!isForm&&!chatStarted){startChat();}
+}
+
+function addChatBubble(role,text){
+  const el=document.createElement('div');
+  el.className='chat-msg '+(role==='user'?'user':'bot');
+  el.textContent=text;
+  document.getElementById('chatMessages').appendChild(el);
+  document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;
+  return el;
+}
+
+function startChat(){
+  chatStarted=true;
+  const isES=lang==='es';
+  const greeting=isES
+    ?'Hola, soy el asistente de AyudaLegalTX. Si acabas de tener un accidente, estoy aquí para orientarte — cuéntame qué pasó.'
+    :"Hi, I'm the AyudaLegalTX assistant. If you just had an accident, I'm here to help — tell me what happened.";
+  addChatBubble('bot',greeting);
+  chatHistory.push({role:'assistant',content:greeting});
+}
+
+async function sendChatMessage(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  addChatBubble('user',text);
+  chatHistory.push({role:'user',content:text});
+  input.value='';
+  const btn=document.getElementById('chatSendBtn');
+  btn.disabled=true;
+
+  const typingEl=document.createElement('div');
+  typingEl.className='chat-msg bot typing';
+  typingEl.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  document.getElementById('chatMessages').appendChild(typingEl);
+  document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;
+
+  try{
+    const res=await fetch(AGENT_API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:chatHistory,lang:lang,source:leadSource})
+    });
+    const data=await res.json();
+    typingEl.remove();
+    const reply=data.reply||(lang==='es'?'Disculpa, ¿puedes repetir eso?':'Sorry, could you repeat that?');
+    addChatBubble('bot',reply);
+    chatHistory.push({role:'assistant',content:reply});
+  }catch(e){
+    typingEl.remove();
+    addChatBubble('bot',lang==='es'?'Tuvimos un problema de conexión. Por favor intenta de nuevo o usa el formulario rápido.':'We had a connection issue. Please try again or use the quick form.');
+    console.log('Chat error:',e);
+  }
+  btn.disabled=false;
+}
 
 const EJS_SERVICE='rozoma@gmail.com';
 const EJS_TEMPLATE='template_fo8h6o8';
@@ -542,6 +648,7 @@ es:{
 'ms4':'Tú recibes tu compensación — <strong>sin deudas médicas pendientes</strong>',
 'mv1':'pagas hoy por atención médica','mv2':'Médicos disponibles ahora','mv3':'Ventana crítica de documentación','mv4':'Sin riesgo económico para ti',
 'fl':'Evaluación de caso','ft':'Cuéntanos qué pasó','fs':'4 preguntas. Nuestro agente evalúa tu caso en tiempo real — de día o de madrugada.',
+'tab-form-t':'Formulario rápido','tab-chat-t':'Chatear con el asistente',
 'q1calm':'🫶 No hay respuesta correcta o incorrecta — solo queremos entender tu situación',
 'q1t':'¿Se hizo un reporte policial?','q1s':'Ayuda tener uno, pero <strong>muchos casos ganan sin él</strong> — fotos, testigos y registros médicos también son válidos.',
 'op11':'Sí, la policía hizo reporte','op11d':'Llegaron al lugar del accidente','op12':'No hay reporte','op12d':'La policía no llegó — igual puedes tener caso','op13':'No estoy seguro(a)','op13d':'Estuvieron pero no sé si registraron',
@@ -582,6 +689,7 @@ en:{
 'ms4':'You receive your compensation — <strong>no outstanding medical debt</strong>',
 'mv1':'you pay today for medical care','mv2':'Doctors available now','mv3':'Critical documentation window','mv4':'Zero financial risk for you',
 'fl':'Case Evaluation','ft':'Tell us what happened','fs':'4 questions. Our agent evaluates your case in real time — day or night.',
+'tab-form-t':'Quick form','tab-chat-t':'Chat with our assistant',
 'q1calm':'🫶 There are no right or wrong answers — we just want to understand your situation',
 'q1t':'Was a police report filed?','q1s':'It helps to have one, but <strong>many cases win without it</strong> — photos, witnesses and medical records are also valid.',
 'op11':'Yes, police filed a report','op11d':'They arrived at the scene','op12':'No report was filed','op12d':'Police didn\'t come — you may still have a case','op13':'Not sure','op13d':'Police were there but I don\'t know if they filed',
